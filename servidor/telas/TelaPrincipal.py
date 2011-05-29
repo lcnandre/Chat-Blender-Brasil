@@ -35,7 +35,7 @@ class TelaPrincipal:
 	#__init__
 	
 	def impBtnIniciar(self, *args):
-		servidor.inicia()
+		servidor.inicia(self.edLog)
 		self.btnIniciar.set_sensitive(False)
 		self.btnParar.set_sensitive(True)
 		self.edLog.get_buffer().insert(self.edLog.get_buffer().get_start_iter(), 'Servidor iniciado\n')

@@ -4,14 +4,14 @@ http://www.pygtk.org/downloads.html
 - Por enquanto, não é possível conversar pela rede sem alterar o código, apenas numa mesma máquina
 
 Para usar:
-1- Execute o arquivo "servidor.bat" ou "servidor.sh" (dependendo de seu ambiente)
-2- Também é possível executar diretamente servidor.py
-3- Na tela do servidor, clique em Iniciar
-4- Execute o arquivo "cliente.bat" ou "cliente.sh" (ou ainda "cliente.py" diretamente)
-5- Use o usuário "teste" e senha "123" para entrar
-6- Converse, de preferência abra outro cliente
+1- Execute o arquivo "servidor.bat" ou "servidor.sh", dependendo de seu ambiente (ou ainda "servidor.py" diretamente)
+2- Na tela do servidor, clique em Iniciar
+3- Execute o arquivo "cliente.bat" ou "cliente.sh" (ou ainda "cliente.py" diretamente)
+4- Use o usuário "teste" e senha "123" para entrar
+5- Converse, de preferência abra outro cliente
 
 TODO:
+- Fazer as threads que usam socket.recv() não ficarem esperando dados depois que o programa é fechado
 - Hospedar o banco de dados na web
 - Hospedar o servidor na web, com IP fixo ou dinâmico
 - Criar uma página para a criação de contas

@@ -11,13 +11,14 @@ s = None
 #importações
 import socket
 import threading
+import gobject
 
 class Servidor():
 	def __init__(self):
 		pass
 	#__init__
 
-	def inicia(self):
+	def inicia(self, log):
 		global iniciado, s
 		#criacao do socket
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -26,7 +27,7 @@ class Servidor():
 		#abertura do socket a novas conexoes
 		s.listen(2)
 		#inicio da thread que trata novas conexoes
-		ThreadNovasConexoes().start()
+		ThreadNovasConexoes(log).start()
 		iniciado = True
 	#inicia
 
@@ -42,10 +43,21 @@ class Servidor():
 
 #criacao da thread responsavel por tratar novas conexoes ao servidor
 class ThreadNovasConexoes(threading.Thread):	
-    def run (self):
+	log = None
+
+	def __init__(self, log):
+		self.log = log
+		threading.Thread.__init__ (self)
+		
+	def atualizaLog(self, mensagem):
+		mensagem = 'Conectado a '+mensagem[0]+' na porta '+str(mensagem[1])+'\n'
+		self.log.get_buffer().insert(self.log.get_buffer().get_start_iter(), mensagem)
+		
+	def run (self):
 		global iniciado, s
 		while iniciado:
 			con, end = s.accept() #aceitacao de nova conexao
+			gobject.idle_add(self.atualizaLog, end)
 			clientes.append(con) #colocacao do socket recem conectado na lista de clientes
 			ThreadMensagensRecebidas(con).start() #inicio da thread que trata mensagens recebidas pelo cliente em questao
 #ThreadNovasConexoes
@@ -58,7 +70,7 @@ class ThreadMensagensRecebidas(threading.Thread):
     def __init__(self, con):
         self.con = con
         threading.Thread.__init__ (self)
-
+		
     def run(self):
 		global iniciado
 		while iniciado: #loop infinito
