@@ -32,7 +32,7 @@ class Servidor():
 	#inicia
 
 	def para(self):
-		global iniciado, s
+		global clientes, iniciado, s
 		for cliente in clientes:
 			cliente.close()
 		s.close()
@@ -54,7 +54,7 @@ class ThreadNovasConexoes(threading.Thread):
 		self.log.get_buffer().insert(self.log.get_buffer().get_start_iter(), mensagem)
 		
 	def run (self):
-		global iniciado, s
+		global clientes, iniciado, s
 		while iniciado:
 			con, end = s.accept() #aceitacao de nova conexao
 			gobject.idle_add(self.atualizaLog, end)
@@ -84,6 +84,7 @@ class ThreadMensagensRecebidas(threading.Thread):
 #ThreadMensagensRecebidas
 
 def broadCast(dados):
+	global clientes
 	for cliente in clientes: #para cada socket de cliente na lista
 		cliente.send(dados) #envio da mensagem recebida
 #broadCast
