@@ -3,7 +3,7 @@
 http://www.pygtk.org/downloads.html
 - Por enquanto, não é possível conversar pela rede sem alterar o código, apenas numa mesma máquina
 
-Para usar:
+PARA USAR:
 1- Execute o arquivo "servidor.bat" ou "servidor.sh", dependendo de seu ambiente (ou ainda "servidor.py" diretamente)
 2- Na tela do servidor, clique em Iniciar
 3- Execute o arquivo "cliente.bat" ou "cliente.sh" (ou ainda "cliente.py" diretamente)
@@ -16,3 +16,6 @@ TODO:
 - Hospedar o servidor na web, com IP fixo ou dinâmico
 - Criar uma página para a criação de contas
 - Implementar o botão "Crie sua conta" no cliente
+
+MEMBROS:
+André Luan (Brutto AVT)
