@@ -24,7 +24,7 @@ class Cliente:
 
 	def envia(self, mensagem):
 		#envio da string 'Teste' ao servidor
-		self.s.send(self.usuario+': '+mensagem)
+		self.s.send('%s: %s'%(self.usuario,mensagem))
 	#envia
 
 	def recebe(self):
