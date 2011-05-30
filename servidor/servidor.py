@@ -76,7 +76,8 @@ class ThreadMensagensRecebidas(threading.Thread):
 		while iniciado: #loop infinito
 			try: #tentativa de recepcao de dados do cliente
 				dados = self.con.recv(1024)
-				if dados == 'qwerasdfzxcvtyuighjkbnm,789+456,/*-0 ASDFdaDFDsfS fdfD54df2DF45Dsf': break
+				if dados.find('qwerasdfzxcvtyuighjkbnm,789+456,/*-0 ASDFdaDFDsfS fdfD54df2DF45Dsf') != -1:
+					break
 				if len(dados) != 0: #se a mensagem nao esta em branco
 					broadCast(dados) #envio da mensagem a todos os clientes
 			except: #caso a tentativa falhe

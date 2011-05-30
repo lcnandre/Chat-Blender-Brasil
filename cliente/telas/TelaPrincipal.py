@@ -59,6 +59,8 @@ class ThreadMensagensRecebidas(threading.Thread):
 		while cliente.conectado: #loop infinito
 			try: #tentativa de recepcao de dados do servidor
 				dados = cliente.recebe()
+				if dados.find('qwerasdfzxcvtyuighjkbnm,789+456,/*-0 ASDFdaDFDsfS fdfD54df2DF45Dsf') != -1:
+					break
 				if len(dados) != 0: #se a mensagem nao esta em branco
 					gobject.idle_add(self.atualizaChat, dados)
 			except: #caso a tentativa falhe
