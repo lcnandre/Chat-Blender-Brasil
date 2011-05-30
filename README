@@ -11,7 +11,6 @@ PARA USAR:
 5- Converse, de preferência abra outro cliente
 
 TODO:
-- Fazer as threads que usam socket.recv() não ficarem esperando dados depois que o programa é fechado
 - Hospedar o banco de dados na web
 - Hospedar o servidor na web, com IP fixo ou dinâmico
 - Criar uma página para a criação de contas
