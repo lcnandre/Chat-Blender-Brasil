@@ -34,6 +34,7 @@ class Cliente:
 
 	def desconecta(self):
 		#término da conexão
+		self.s.send('qwerasdfzxcvtyuighjkbnm,789+456,/*-0 ASDFdaDFDsfS fdfD54df2DF45Dsf') #ninguém vai acertar enviar isso aqui
 		self.s.close()
 		self.s = None
 		self.conectado = False
