@@ -1,4 +1,8 @@
-﻿#importações
+﻿#globais
+STATUS_ONLINE = 1
+STATUS_OFFLINE = 0
+
+#importações
 import os
 import threading
 import gtk, gtk.glade, gobject
@@ -29,6 +33,7 @@ class TelaPrincipal:
 		self.edChat = xml.get_widget('edChat')
 		self.edMensagem = xml.get_widget('edMensagem')
 		cliente = cli
+		cliente.getListaContatos()#atualiza lista de contatos
 		ThreadMensagensRecebidas(self.edChat).start()
 	#__init__
 	
@@ -62,9 +67,15 @@ class ThreadMensagensRecebidas(threading.Thread):
 		while cliente.conectado: #loop infinito
 			try: #tentativa de recepcao de dados do servidor
 				dados = cliente.recebe()
+				#comando "sair"
 				if dados.find('qwerasdfzxcvtyuighjkbnm,789+456,/*-0 ASDFdaDFDsfS fdfD54df2DF45Dsf') != -1:
 					break
-				if len(dados) != 0: #se a mensagem nao esta em branco
+				#comando "encerrar servidor"
+				elif dados.find('23498 f/2423rdfs99xcv0a ad8 09 /45//88908/ sdf99089/*-)(*53/ 324 -3243-') != -1:
+					self.atualizaChat('O servidor está sendo encerrado')
+					cliente.desconecta()
+				#outras mensagens (chat)
+				elif len(dados) != 0: #se a mensagem nao esta em branco
 					gobject.idle_add(self.atualizaChat, dados)
 			except: #caso a tentativa falhe
 				pass

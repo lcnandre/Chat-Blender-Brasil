@@ -1,4 +1,8 @@
-﻿#IP e host do servidor
+﻿#globais
+LOGIN_USUARIO_INCORRETO = '1'
+LOGIN_SENHA_INCORRETA = '2'
+
+#IP e host do servidor
 PORTA = 2021
 HOST = '127.0.0.1'
 
@@ -9,6 +13,7 @@ class Cliente:
 	usuario = ''
 	conectado = False
 	s = None
+	contatos =  []
 
 	def __init__(self):
 		pass
@@ -23,11 +28,12 @@ class Cliente:
 	#conecta
 
 	def envia(self, mensagem):
-		#envio da string 'Teste' ao servidor
-		if len(self.usuario) > 0:
-			self.s.send('%s: %s'%(self.usuario,mensagem))
-		else:
-			self.s.send(mensagem)
+		if self.conectado:
+			#envio da mensagem ao servidor
+			if len(self.usuario) > 0:
+				self.s.send('%s: %s'%(self.usuario,mensagem))
+			else:
+				self.s.send(mensagem)
 	#envia
 
 	def recebe(self):
@@ -36,11 +42,36 @@ class Cliente:
 	#recebe
 
 	def desconecta(self):
-		#término da conexão
-		self.s.send('qwerasdfzxcvtyuighjkbnm,789+456,/*-0 ASDFdaDFDsfS fdfD54df2DF45Dsf') #ninguém vai acertar enviar isso aqui
-		self.s.recv(1024)#aguarda ok do servidor
-		self.s.close()
-		self.s = None
-		self.conectado = False
+		if self.conectado:
+			#término da conexão
+			self.s.send('qwerasdfzxcvtyuighjkbnm,789+456,/*-0 ASDFdaDFDsfS fdfD54df2DF45Dsf') #ninguém vai acertar enviar isso aqui
+			self.s.recv(1024)#aguarda ok do servidor
+			self.s.close()
+			self.s = None
+			self.conectado = False
 	#desconecta
+	
+	def getListaContatos(self):
+		self.contatos = [] #limpa a lista
+		self.s.send('(9s8d9s asudhasiud 8s9d8as /*-393 2 s8duas98d U8s8a SD98j /00s*')
+		c = self.s.recv(1024) #recebe primeiro contato
+		#enquanto houverem contatos, coloca na lista
+		while c != '(9s8d9s asudhasiud 8s9d8as /*-393 2 s8duas98d U8s8a SD98j /00s*':
+			self.contatos.append(eval(c))#converte de string novamente para lista
+			self.s.send('OK')#envia ok ao servidor
+			c = self.s.recv(1024)#recebe o proximo contatos
+	#getListaContatos
+	
+	def fazLogin(self, login, senha):
+		import hashlib
+		
+		senha = hashlib.md5(senha).hexdigest()
+		self.envia('ASIdas7f873rfasf7a83 as7da 8327ra s 32893') #comando para login
+		self.envia(login) #envia login
+		self.recebe() #aguarda ok do servidor
+		self.envia(senha) #envia senha
+		retorno = self.recebe() #retorno do servidor
+		self.envia('OK')
+		return retorno
+	#fazLogin
 #Cliente

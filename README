@@ -11,6 +11,10 @@ PARA USAR:
 5- Converse, de preferência abra outro cliente
 
 TODO:
+- Fazer algo útil com a lista de contatos (adicionar uma lista na tela principal do cliente)
+- Permitir conversas privadas (abrir nova janela para cada conversa)
+- Permitir que um usuário adicione outro como contato (criar um botão na tela principal para isso)
+- Quando um usuário fica offline, a lista de contatos de cada um de seus amigos deve ser atualizada com tal informação
 - Hospedar o banco de dados na web
 - Hospedar o servidor na web, com IP fixo ou dinâmico
 - Criar uma página para a criação de contas

@@ -49,8 +49,7 @@ class TelaPrincipal:
 	#impBtnParar
 	
 	def sair(self, *args):
-		if self.btnIniciar.state == gtk.STATE_INSENSITIVE:
-			servidor.para()
+		servidor.para()
 		gtk.main_quit()
 	#impBtnParar
 #class TelaPrincipal

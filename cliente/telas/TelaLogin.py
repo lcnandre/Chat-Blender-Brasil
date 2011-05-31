@@ -37,19 +37,11 @@ class TelaLogin:
 	#__init__
 		
 	def impBtnEntrar(self, *args):
-		import hashlib
-		#
 		login = self.edLogin.get_text()
 		senha = self.edSenha.get_text()
 		#
 		if self.valida(login, senha):
-			senha = hashlib.md5(senha).hexdigest()
-			self.cliente.envia('ASIdas7f873rfasf7a83 as7da 8327ra s 32893') #comando para login
-			self.cliente.envia(login) #envia login
-			self.cliente.recebe() #aguarda ok do servidor
-			self.cliente.envia(senha) #envia senha
-			retorno = self.cliente.recebe() #retorno do servidor
-			self.cliente.envia('OK')
+			retorno = self.cliente.fazLogin(login, senha)
 			if retorno == LOGIN_USUARIO_INCORRETO:
 				mostraErro(self.tela, 'Usuário inexistente')
 			elif retorno == LOGIN_SENHA_INCORRETA:

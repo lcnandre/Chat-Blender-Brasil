@@ -2,6 +2,8 @@
 LOGIN_OK = '0'
 LOGIN_USUARIO_INCORRETO = '1'
 LOGIN_SENHA_INCORRETA = '2'
+STATUS_ONLINE = 1
+STATUS_OFFLINE = 0
 
 #porta e IP do servidor
 PORTA = 2021
@@ -43,11 +45,20 @@ class Servidor():
 
 	def para(self):
 		global clientes, iniciado, s
-		for cliente in clientes:
-			cliente.close()
-		s.close()
-		s = None
-		iniciado = False
+		if iniciado:
+			#avisa e desconecta todos os clientes
+			for cliente in clientes:
+				cliente.send('23498 f/2423rdfs99xcv0a ad8 09 /45//88908/ sdf99089/*-)(*53/ 324 -3243-')
+				cliente.close()
+			iniciado = False
+			#conecta o servidor a ele mesmo para matar a thread de novas conexoes
+			s1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			s1.connect((HOST, PORTA))
+			#finaliza ambos os sockets
+			s1.close()
+			s.close()
+			#define todos os clientes como offline
+			broadCastPresenca(STATUS_OFFLINE)
 	#para
 #Servidor
 
@@ -79,6 +90,7 @@ class ThreadNovasConexoes(threading.Thread):
 #criacao da thread que trata mensagens recebidas por cada cliente
 class ThreadMensagensRecebidas(threading.Thread):
 	con = None #socket do cliente
+	usuario = None
 	log = None
 
 	#inicializacao da thread e atribuicao do socket do cliente
@@ -105,14 +117,27 @@ class ThreadMensagensRecebidas(threading.Thread):
 					self.con.send(dados) #envio da mensagem ao cliente que a enviou
 					clientes.remove(self.con)
 					self.con.close()
+					#define cliente como offline no BD
+					if self.usuario != None:
+						atualizaPresenca(self.usuario, STATUS_OFFLINE)
 					break
 				#comando "login"
 				elif dados.find('ASIdas7f873rfasf7a83 as7da 8327ra s 32893') != -1:
-					validaLogin(self.con)
-				#outra mensagem (chat)
+					self.usuario = fazLogin(self.con)
+				#comando "getListaContatos"
+				elif dados.find('(9s8d9s asudhasiud 8s9d8as /*-393 2 s8duas98d U8s8a SD98j /00s*') != -1:
+					if self.usuario != None:
+						contatos = getListaContatos(self.usuario)#obtem a lista de contatos do cliente
+						#envia os contatos ao cliente
+						for contato in contatos:
+							self.con.send(str(contato))
+							self.con.recv(1024)#aguarda ok do cliente
+						self.con.send('(9s8d9s asudhasiud 8s9d8as /*-393 2 s8duas98d U8s8a SD98j /00s*')#envia para dizer que a lista acabou
+				#outras mensagens (chat)
 				elif len(dados) != 0: #se a mensagem nao esta em branco
 					broadCast(dados) #envio da mensagem a todos os clientes
 			except: #caso a tentativa falhe
+				clientes.remove(self.con)
 				self.con.close() #fechamento do socket do cliente
 				break #fim do loop infinito
 #ThreadMensagensRecebidas
@@ -123,6 +148,48 @@ def broadCast(dados):
 		cliente.send(dados) #envio da mensagem recebida
 #broadCast
 
+def getListaContatos(login):
+	import sqlite3
+	import sqlite3
+	contatos = []
+	#busca a lista de contatos (apenas os que estao online) no BD
+	sql = """select u.login, u.ip, u.status
+			 from contato c inner join usuario u on u.id = c.amigo_id
+			 where c.usuario_id = (select id from usuario where login = ?)
+			 and u.status = 1"""
+	conexao = sqlite3.connect(os.path.join(path, '..\chat.s3db'))
+	cursor = conexao.cursor()
+	cursor.execute(sql,(login,))
+	for contato in cursor:
+		contatos.append(contato)
+	conexao.close()
+	return contatos
+#getListaContatos
+
+def atualizaPresenca(login, status):
+	import sqlite3
+	sql = """update usuario 
+			 set status = ?
+			 where login = ?"""
+	conexao = sqlite3.connect(os.path.join(path, '..\chat.s3db'))
+	cursor = conexao.cursor()
+	cursor.execute(sql, (status,login,))
+	conexao.commit()
+	conexao.close()
+#atualizaPresenca
+
+def broadCastPresenca(status):
+	import sqlite3
+	sql = """update usuario 
+			 set status = ?
+			 where 1=1"""
+	conexao = sqlite3.connect(os.path.join(path, '..\chat.s3db'))
+	cursor = conexao.cursor()
+	cursor.execute(sql, (status,))
+	conexao.commit()
+	conexao.close()
+#broadCastPresenca
+	
 def atualizaIp(ip, login):
 	import sqlite3
 	conexao = sqlite3.connect(os.path.join(path, '..\chat.s3db'))
@@ -132,7 +199,7 @@ def atualizaIp(ip, login):
 	conexao.close()
 #atualizaIp
 
-def validaLogin(con):
+def fazLogin(con):
 	import sqlite3
 	# recepcao dos dados
 	login = con.recv(1024)
@@ -147,12 +214,17 @@ def validaLogin(con):
 	#retorno ao cliente
 	if len(res) == 0:
 		con.send(LOGIN_USUARIO_INCORRETO)
+		con.recv(1024) #aguarda ok do cliente
 	elif res[0][0] != senha:
 		con.send(LOGIN_SENHA_INCORRETA)
+		con.recv(1024) #aguarda ok do cliente
 	else:
 		con.send(LOGIN_OK)
-		atualizaIp(con.getpeername()[0], login)
-	con.recv(1024) #aguarda ok do cliente
+		con.recv(1024) #aguarda ok do cliente
+		atualizaIp(con.getpeername()[0], login)#atualiza IP do cliente no banco de dados
+		atualizaPresenca(login, STATUS_ONLINE)#atualiza o status do cliente
+		return login #devolve o login para a thread
+	return None #se nao fizer login, devolve nada para athread
 #validaLogin
 
 if __name__ == "__main__":
