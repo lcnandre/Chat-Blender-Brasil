@@ -123,6 +123,15 @@ def broadCast(dados):
 		cliente.send(dados) #envio da mensagem recebida
 #broadCast
 
+def atualizaIp(ip, login):
+	import sqlite3
+	conexao = sqlite3.connect(os.path.join(path, '..\chat.s3db'))
+	cursor = conexao.cursor()
+	cursor.execute('update usuario set ip = ? where login = ?', (ip,login,))
+	conexao.commit()
+	conexao.close()
+#atualizaIp
+
 def validaLogin(con):
 	import sqlite3
 	# recepcao dos dados
@@ -134,6 +143,7 @@ def validaLogin(con):
 	cursor = conexao.cursor()
 	cursor.execute('select senha from usuario where login = ?', (login,))
 	res = cursor.fetchall()
+	conexao.close()
 	#retorno ao cliente
 	if len(res) == 0:
 		con.send(LOGIN_USUARIO_INCORRETO)
@@ -141,6 +151,7 @@ def validaLogin(con):
 		con.send(LOGIN_SENHA_INCORRETA)
 	else:
 		con.send(LOGIN_OK)
+		atualizaIp(con.getpeername()[0], login)
 	con.recv(1024) #aguarda ok do cliente
 #validaLogin
 
