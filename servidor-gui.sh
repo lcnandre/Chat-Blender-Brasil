@@ -1,2 +1,2 @@
-﻿python servidor/servidor.py
+﻿python servidor.py
 read -p "Pressione qualquer tecla para continuar..."

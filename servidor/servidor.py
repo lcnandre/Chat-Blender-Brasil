@@ -17,7 +17,7 @@ class Servidor():
 	def __init__(self):
 		pass
 	#__init__
-
+	
 	def inicia(self, log):
 		global iniciado, s
 		#criacao do socket
@@ -29,6 +29,17 @@ class Servidor():
 		#inicio da thread que trata novas conexoes
 		ThreadNovasConexoes(log).start()
 		iniciado = True
+	#inicia
+	
+	#funcao inicia alternativa (sem interface grafica)
+	def inicia(self):
+		global iniciado, s
+		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s.bind((HOST, PORTA))
+		s.listen(2)
+		ThreadNovasConexoes().start()
+		iniciado = True
+		print 'Servidor rodando na porta ', PORTA
 	#inicia
 
 	def para(self):
@@ -49,6 +60,10 @@ class ThreadNovasConexoes(threading.Thread):
 		self.log = log
 		threading.Thread.__init__ (self)
 		
+	#construtor alternativo (versao sem interface grafica)
+	def __init__(self):
+		threading.Thread.__init__ (self)
+		
 	def atualizaLog(self, mensagem):
 		mensagem = 'Conectado a '+mensagem[0]+' na porta '+str(mensagem[1])+'\n'
 		self.log.get_buffer().insert(self.log.get_buffer().get_start_iter(), mensagem)
@@ -57,7 +72,11 @@ class ThreadNovasConexoes(threading.Thread):
 		global clientes, iniciado, s
 		while iniciado:
 			con, end = s.accept() #aceitacao de nova conexao
-			gobject.idle_add(self.atualizaLog, end)
+			#se existe um objeto log, atualiza a tela, senao mostra mensagem no console
+			if self.log != None:
+				gobject.idle_add(self.atualizaLog, end)
+			else:
+				print 'Conectado a '+end[0]+' na porta '+str(end[1])+'\n'
 			clientes.append(con) #colocacao do socket recem conectado na lista de clientes
 			ThreadMensagensRecebidas(con).start() #inicio da thread que trata mensagens recebidas pelo cliente em questao
 #ThreadNovasConexoes
@@ -77,6 +96,7 @@ class ThreadMensagensRecebidas(threading.Thread):
 			try: #tentativa de recepcao de dados do cliente
 				dados = self.con.recv(1024)
 				if dados.find('qwerasdfzxcvtyuighjkbnm,789+456,/*-0 ASDFdaDFDsfS fdfD54df2DF45Dsf') != -1:
+					self.con.send(dados) #envio da mensagem ao cliente que a enviou
 					break
 				if len(dados) != 0: #se a mensagem nao esta em branco
 					broadCast(dados) #envio da mensagem a todos os clientes
@@ -90,3 +110,7 @@ def broadCast(dados):
 	for cliente in clientes: #para cada socket de cliente na lista
 		cliente.send(dados) #envio da mensagem recebida
 #broadCast
+
+if __name__ == "__main__":
+	servidor = Servidor()
+	servidor.inicia()
