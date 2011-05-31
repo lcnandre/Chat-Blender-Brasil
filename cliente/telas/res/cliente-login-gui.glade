@@ -11,7 +11,7 @@
     <property name="resizable">False</property>
     <property name="window_position">center</property>
     <property name="default_width">279</property>
-    <property name="default_height">185</property>
+    <property name="default_height">183</property>
     <signal name="destroy" handler="gtk_main_quit" swapped="no"/>
     <child>
       <widget class="GtkFixed" id="fixed1">
@@ -115,21 +115,19 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkLinkButton" id="btnCriarConta">
+          <widget class="GtkButton" id="btnCriarConta">
             <property name="label" translatable="yes">Crie sua conta</property>
-            <property name="width_request">279</property>
-            <property name="height_request">34</property>
+            <property name="width_request">256</property>
+            <property name="height_request">27</property>
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="has_tooltip">True</property>
             <property name="use_action_appearance">False</property>
             <property name="relief">none</property>
-            <property name="use_underline">True</property>
-            <property name="uri">#</property>
           </widget>
           <packing>
-            <property name="y">150</property>
+            <property name="x">10</property>
+            <property name="y">144</property>
           </packing>
         </child>
       </widget>

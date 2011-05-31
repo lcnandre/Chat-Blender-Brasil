@@ -20,6 +20,12 @@ TODO:
 - Criar uma página para a criação de contas
 - Implementar o botão "Crie sua conta" no cliente
 
+FIXME:
+- servidor.py:
+	- para fechar o servidor, é preciso apertar o botão Parar duas vezes
+- cliente/telas/TelaLogin.py:
+	- btnCriarConta() simplesmente não funciona, mas o python não gera nenhum erro
+
 MEMBROS:
 André Luan (Brutto AVT)
 Solano Felício (Solano)

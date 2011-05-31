@@ -8,6 +8,7 @@ import gtk, gtk.glade
 from util import mostraErro
 from TelaPrincipal import TelaPrincipal
 from cliente import Cliente
+import webbrowser
 
 path = os.path.dirname(os.path.abspath(__file__))
 
@@ -28,6 +29,7 @@ class TelaLogin:
 			'on_btnEntrar_clicked': self.impBtnEntrar,
 			'on_edLogin_activate': self.impBtnEntrar,
 			'on_edSenha_activate': self.impBtnEntrar,
+			'on_btnCriarConta_clicked': self.impBtnCriarConta,
 		}
 		xml.signal_autoconnect(self.dic)
 		self.edLogin = xml.get_widget('edLogin')
@@ -62,4 +64,9 @@ class TelaLogin:
 		#
 		return True
 	#valida
+	
+	def impBtnCriarConta(self, *args):
+		webbrowser.open_new('blender.com.br/user/register')
+	#impBtnCriarConta
+
 #class TelaLogin
