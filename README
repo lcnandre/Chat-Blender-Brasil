@@ -23,8 +23,7 @@ TODO:
 FIXME:
 - servidor.py:
 	- para fechar o servidor, é preciso apertar o botão Parar duas vezes
-- cliente/telas/TelaLogin.py:
-	- btnCriarConta() simplesmente não funciona, mas o python não gera nenhum erro
+	- o BD não funciona em sistemas Linux
 
 MEMBROS:
 André Luan (Brutto AVT)
