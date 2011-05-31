@@ -1,8 +1,13 @@
-﻿#importações
+﻿#globais
+LOGIN_USUARIO_INCORRETO = '1'
+LOGIN_SENHA_INCORRETA = '2'
+
+#importações
 import os
 import gtk, gtk.glade
 from util import mostraErro
 from TelaPrincipal import TelaPrincipal
+from cliente import Cliente
 
 path = os.path.dirname(os.path.abspath(__file__))
 
@@ -12,6 +17,7 @@ class TelaLogin:
 	tela = None
 	edLogin = None
 	edSenha = None
+	cliente = Cliente()
 	
 	def __init__(self):
 		#carrega a interface
@@ -27,28 +33,31 @@ class TelaLogin:
 		self.edLogin = xml.get_widget('edLogin')
 		self.edSenha = xml.get_widget('edSenha')
 		self.tela = xml.get_widget('telaLogin')
+		self.cliente.conecta()
 	#__init__
 		
 	def impBtnEntrar(self, *args):
-		import sqlite3
 		import hashlib
 		#
-		conexao = sqlite3.connect(os.path.join(path, '..\..\chat.s3db'))
-		cursor = conexao.cursor()
 		login = self.edLogin.get_text()
 		senha = self.edSenha.get_text()
 		#
 		if self.valida(login, senha):
 			senha = hashlib.md5(senha).hexdigest()
-			cursor.execute('select senha from usuario where login = ?', (login,))
-			res = cursor.fetchall()
-			if len(res) == 0:
+			self.cliente.envia('ASIdas7f873rfasf7a83 as7da 8327ra s 32893') #comando para login
+			self.cliente.envia(login) #envia login
+			self.cliente.recebe() #aguarda ok do servidor
+			self.cliente.envia(senha) #envia senha
+			retorno = self.cliente.recebe() #retorno do servidor
+			self.cliente.envia('OK')
+			if retorno == LOGIN_USUARIO_INCORRETO:
 				mostraErro(self.tela, 'Usuário inexistente')
-			elif res[0][0] != senha:
+			elif retorno == LOGIN_SENHA_INCORRETA:
 				mostraErro(self.tela, 'Senha incorreta')
 			else:
 				self.tela.hide()
-				TelaPrincipal(login).tela.show()				
+				self.cliente.usuario = login
+				TelaPrincipal(self.cliente).tela.show()				
 	#impBtnEntrar
 	
 	def valida(self, login, senha):

@@ -24,7 +24,10 @@ class Cliente:
 
 	def envia(self, mensagem):
 		#envio da string 'Teste' ao servidor
-		self.s.send('%s: %s'%(self.usuario,mensagem))
+		if len(self.usuario) > 0:
+			self.s.send('%s: %s'%(self.usuario,mensagem))
+		else:
+			self.s.send(mensagem)
 	#envia
 
 	def recebe(self):
@@ -35,6 +38,7 @@ class Cliente:
 	def desconecta(self):
 		#término da conexão
 		self.s.send('qwerasdfzxcvtyuighjkbnm,789+456,/*-0 ASDFdaDFDsfS fdfD54df2DF45Dsf') #ninguém vai acertar enviar isso aqui
+		self.s.recv(1024)#aguarda ok do servidor
 		self.s.close()
 		self.s = None
 		self.conectado = False

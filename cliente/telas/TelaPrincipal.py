@@ -3,11 +3,11 @@ import os
 import threading
 import gtk, gtk.glade, gobject
 from util import mostraErro
-from cliente import Cliente
 
 gobject.threads_init()
 path = os.path.dirname(os.path.abspath(__file__))
-cliente = Cliente()
+global cliente
+cliente = None
 
 class TelaPrincipal:
 	#mapeamento de signals
@@ -16,7 +16,8 @@ class TelaPrincipal:
 	edChat = None
 	edMensagem = None
 	
-	def __init__(self, usuario):
+	def __init__(self, cli):
+		global cliente
 		#carrega a interface
 		xml = gtk.glade.XML(os.path.join(path, 'res/cliente-principal-gui.glade'))
 		self.dic = {
@@ -27,18 +28,19 @@ class TelaPrincipal:
 		self.tela = xml.get_widget('telaPrincipal')
 		self.edChat = xml.get_widget('edChat')
 		self.edMensagem = xml.get_widget('edMensagem')
-		cliente.conecta()
-		cliente.usuario = usuario
+		cliente = cli
 		ThreadMensagensRecebidas(self.edChat).start()
 	#__init__
 	
 	def impEdMensagem(self, *args):
+		global cliente
 		mensagem = self.edMensagem.get_text()
 		self.edMensagem.set_text('')
 		cliente.envia(mensagem)
 	#impEdMensagem
 	
 	def sair(self, *args):
+		global cliente
 		cliente.desconecta()
 		gtk.main_quit()
 	#sair
@@ -56,6 +58,7 @@ class ThreadMensagensRecebidas(threading.Thread):
 		self.chat.get_buffer().insert(self.chat.get_buffer().get_end_iter(), mensagem+'\n')
 		
 	def run(self):
+		global cliente
 		while cliente.conectado: #loop infinito
 			try: #tentativa de recepcao de dados do servidor
 				dados = cliente.recebe()

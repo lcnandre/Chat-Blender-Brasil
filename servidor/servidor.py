@@ -1,4 +1,9 @@
-﻿#porta e IP do servidor
+﻿#globais
+LOGIN_OK = '0'
+LOGIN_USUARIO_INCORRETO = '1'
+LOGIN_SENHA_INCORRETA = '2'
+
+#porta e IP do servidor
 PORTA = 2021
 HOST = '127.0.0.1'
 
@@ -9,9 +14,12 @@ clientes = []
 s = None
 
 #importações
+import os
 import socket
 import threading
 import gobject
+
+path = os.path.dirname(os.path.abspath(__file__))
 
 class Servidor():
 	def __init__(self):
@@ -26,20 +34,11 @@ class Servidor():
 		s.bind((HOST, PORTA))
 		#abertura do socket a novas conexoes
 		s.listen(2)
-		#inicio da thread que trata novas conexoes
+		iniciado = True
+		if log == None:
+			print 'Servidor rodando na porta', PORTA
 		ThreadNovasConexoes(log).start()
-		iniciado = True
-	#inicia
-	
-	#funcao inicia alternativa (sem interface grafica)
-	def inicia(self):
-		global iniciado, s
-		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		s.bind((HOST, PORTA))
-		s.listen(2)
-		ThreadNovasConexoes().start()
-		iniciado = True
-		print 'Servidor rodando na porta ', PORTA
+		#inicio da thread que trata novas conexoes
 	#inicia
 
 	def para(self):
@@ -60,14 +59,10 @@ class ThreadNovasConexoes(threading.Thread):
 		self.log = log
 		threading.Thread.__init__ (self)
 		
-	#construtor alternativo (versao sem interface grafica)
-	def __init__(self):
-		threading.Thread.__init__ (self)
-		
-	def atualizaLog(self, mensagem):
-		mensagem = 'Conectado a '+mensagem[0]+' na porta '+str(mensagem[1])+'\n'
-		self.log.get_buffer().insert(self.log.get_buffer().get_start_iter(), mensagem)
-		
+	def atualizaLog(self, end):
+		end = 'Conectado a '+end[0]+' na porta '+str(end[1])+'\n'
+		self.log.get_buffer().insert(self.log.get_buffer().get_start_iter(), end)
+	
 	def run (self):
 		global clientes, iniciado, s
 		while iniciado:
@@ -78,27 +73,44 @@ class ThreadNovasConexoes(threading.Thread):
 			else:
 				print 'Conectado a '+end[0]+' na porta '+str(end[1])+'\n'
 			clientes.append(con) #colocacao do socket recem conectado na lista de clientes
-			ThreadMensagensRecebidas(con).start() #inicio da thread que trata mensagens recebidas pelo cliente em questao
+			ThreadMensagensRecebidas(con, self.log).start() #inicio da thread que trata mensagens recebidas pelo cliente em questao
 #ThreadNovasConexoes
 
 #criacao da thread que trata mensagens recebidas por cada cliente
 class ThreadMensagensRecebidas(threading.Thread):
-    con = None #socket do cliente
+	con = None #socket do cliente
+	log = None
 
-    #inicializacao da thread e atribuicao do socket do cliente
-    def __init__(self, con):
-        self.con = con
-        threading.Thread.__init__ (self)
-		
-    def run(self):
+	#inicializacao da thread e atribuicao do socket do cliente
+	def __init__(self, con, log):
+		self.con = con
+		self.log = log
+		threading.Thread.__init__ (self)
+
+	def atualizaLog(self, ip):
+		end = 'Desconectado de '+ip+'\n'
+		self.log.get_buffer().insert(self.log.get_buffer().get_start_iter(), end)
+
+	def run(self):
 		global iniciado
 		while iniciado: #loop infinito
 			try: #tentativa de recepcao de dados do cliente
 				dados = self.con.recv(1024)
+				#comando "sair"
 				if dados.find('qwerasdfzxcvtyuighjkbnm,789+456,/*-0 ASDFdaDFDsfS fdfD54df2DF45Dsf') != -1:
+					if self.log != None:
+						gobject.idle_add(self.atualizaLog,self.con.getpeername()[0])
+					else:
+						print 'Desconectado de '+self.con.getpeername()[0]
 					self.con.send(dados) #envio da mensagem ao cliente que a enviou
+					clientes.remove(self.con)
+					self.con.close()
 					break
-				if len(dados) != 0: #se a mensagem nao esta em branco
+				#comando "login"
+				elif dados.find('ASIdas7f873rfasf7a83 as7da 8327ra s 32893') != -1:
+					validaLogin(self.con)
+				#outra mensagem (chat)
+				elif len(dados) != 0: #se a mensagem nao esta em branco
 					broadCast(dados) #envio da mensagem a todos os clientes
 			except: #caso a tentativa falhe
 				self.con.close() #fechamento do socket do cliente
@@ -111,6 +123,27 @@ def broadCast(dados):
 		cliente.send(dados) #envio da mensagem recebida
 #broadCast
 
+def validaLogin(con):
+	import sqlite3
+	# recepcao dos dados
+	login = con.recv(1024)
+	con.send('OK')
+	senha = con.recv(1024)
+	# validacao dos dados
+	conexao = sqlite3.connect(os.path.join(path, '..\chat.s3db'))
+	cursor = conexao.cursor()
+	cursor.execute('select senha from usuario where login = ?', (login,))
+	res = cursor.fetchall()
+	#retorno ao cliente
+	if len(res) == 0:
+		con.send(LOGIN_USUARIO_INCORRETO)
+	elif res[0][0] != senha:
+		con.send(LOGIN_SENHA_INCORRETA)
+	else:
+		con.send(LOGIN_OK)
+	con.recv(1024) #aguarda ok do cliente
+#validaLogin
+
 if __name__ == "__main__":
 	servidor = Servidor()
-	servidor.inicia()
+	servidor.inicia(None)
