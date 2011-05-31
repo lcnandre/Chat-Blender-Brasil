@@ -124,6 +124,8 @@
             <property name="receives_default">True</property>
             <property name="use_action_appearance">False</property>
             <property name="relief">none</property>
+            <signal name="activate" handler="on_btnCriarConta_activate" swapped="no"/>
+            <signal name="clicked" handler="on_btnCriarConta_clicked" swapped="no"/>
           </widget>
           <packing>
             <property name="x">10</property>
