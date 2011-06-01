@@ -161,7 +161,10 @@ def getListaContatos(login):
 	cursor = conexao.cursor()
 	cursor.execute(sql,(login,))
 	for contato in cursor:
-		contatos.append(contato)
+		c = {}
+		c['nome'] = contato[0]
+		c['ip'] = contato[1]
+		contatos.append(c)
 	conexao.close()
 	return contatos
 #getListaContatos

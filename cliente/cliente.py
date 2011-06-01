@@ -4,7 +4,6 @@ LOGIN_SENHA_INCORRETA = '2'
 
 #importações
 import socket
-from util import getIpWan
 
 #IP e host do servidor
 PORTA_CHAT = 2021
