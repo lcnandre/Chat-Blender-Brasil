@@ -3,14 +3,14 @@
   <!-- interface-requires gtk+ 2.24 -->
   <!-- interface-naming-policy project-wide -->
   <widget class="GtkWindow" id="telaPrincipal">
-    <property name="width_request">598</property>
+    <property name="width_request">650</property>
     <property name="height_request">434</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Chat Blender Brasil v0.1</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
-    <property name="default_width">598</property>
+    <property name="default_width">650</property>
     <property name="default_height">434</property>
     <signal name="destroy" handler="on_telaPrincipal_destroy" swapped="no"/>
     <child>
@@ -19,8 +19,8 @@
         <property name="can_focus">False</property>
         <child>
           <widget class="GtkScrolledWindow" id="scrolledwindow1">
-            <property name="width_request">587</property>
-            <property name="height_request">395</property>
+            <property name="width_request">474</property>
+            <property name="height_request">397</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="hscrollbar_policy">automatic</property>
@@ -28,19 +28,20 @@
             <child>
               <widget class="GtkTextView" id="edChat">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="sensitive">False</property>
+                <property name="can_focus">False</property>
                 <property name="editable">False</property>
               </widget>
             </child>
           </widget>
           <packing>
-            <property name="x">5</property>
+            <property name="x">6</property>
             <property name="y">5</property>
           </packing>
         </child>
         <child>
           <widget class="GtkEntry" id="edMensagem">
-            <property name="width_request">587</property>
+            <property name="width_request">643</property>
             <property name="height_request">21</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
@@ -55,6 +56,19 @@
           <packing>
             <property name="x">5</property>
             <property name="y">406</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkTreeView" id="listaContatos">
+            <property name="width_request">161</property>
+            <property name="height_request">400</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <signal name="row_activated" handler="on_listaContatos_row_activated" swapped="no"/>
+          </widget>
+          <packing>
+            <property name="x">485</property>
+            <property name="y">4</property>
           </packing>
         </child>
       </widget>

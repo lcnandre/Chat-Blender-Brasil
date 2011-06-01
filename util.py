@@ -12,8 +12,6 @@ def mostraErro(pai, mensagem):
 	telaErro.destroy()
 #mostraErro
 
-
-
 def getIpWan():
 	reg = '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' 
 	pag = urllib.urlopen('http://meuip.net/') 

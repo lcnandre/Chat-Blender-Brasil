@@ -7,6 +7,7 @@ import os
 import threading
 import gtk, gtk.glade, gobject
 from util import mostraErro
+from TelaConversa import TelaConversa
 
 gobject.threads_init()
 path = os.path.dirname(os.path.abspath(__file__))
@@ -19,6 +20,8 @@ class TelaPrincipal:
 	tela = None
 	edChat = None
 	edMensagem = None
+	listaContatos = None
+	contatos = None
 	
 	def __init__(self, cli):
 		global cliente
@@ -27,15 +30,37 @@ class TelaPrincipal:
 		self.dic = {
 			'on_telaPrincipal_destroy': self.sair,
 			'on_edMensagem_activate': self.impEdMensagem,
+			'on_listaContatos_row_activated' : self.abreConversa,
 		}
 		xml.signal_autoconnect(self.dic)
 		self.tela = xml.get_widget('telaPrincipal')
 		self.edChat = xml.get_widget('edChat')
 		self.edMensagem = xml.get_widget('edMensagem')
+		self.listaContatos = xml.get_widget('listaContatos')
 		cliente = cli
-		cliente.getListaContatos()#atualiza lista de contatos
+		#configuracao da lista de contatos
+		coluna = gtk.TreeViewColumn('Contatos', gtk.CellRendererText(), text=0)
+		self.listaContatos.append_column(coluna)
+		self.contatos = gtk.ListStore(str)
+		self.listaContatos.set_model(self.contatos)
+		self.carregaContatos()
+		#
 		ThreadMensagensRecebidas(self.edChat).start()
 	#__init__
+	
+	def carregaContatos(self):
+		#atualiza lista de contatos
+		cliente.getListaContatos()
+		for contato in cliente.contatos:
+			self.contatos.append([contato['nome']])
+	#carregaContatos
+	
+	def abreConversa(self, *args):
+		#pega o ip do contato selecionado e abre uma tela de conversa
+		contato = self.listaContatos.get_selection().get_selected_rows()[1][0][0]
+		contato = cliente.contatos[contato]
+		TelaConversa(contato).tela.show()
+	#abreConversa
 	
 	def impEdMensagem(self, *args):
 		global cliente

@@ -2,29 +2,41 @@
 LOGIN_USUARIO_INCORRETO = '1'
 LOGIN_SENHA_INCORRETA = '2'
 
-#IP e host do servidor
-PORTA = 2021
-HOST = '127.0.0.1'
-
 #importações
 import socket
+from util import getIpWan
+
+#IP e host do servidor
+PORTA_CHAT = 2021
+PORTA_CONVERSA = 2120
+HOST_CHAT = '127.0.0.1'
+HOST_CONVERSA = '127.0.0.1'
 
 class Cliente:	
 	usuario = ''
 	conectado = False
 	s = None
+	sConversas = None
 	contatos =  []
+	conversas = []
 
 	def __init__(self):
 		pass
 	#__init__
 	
 	def conecta(self):
-		#criacao do socket
+		#criacao dos sockets cliente e servidor
 		self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.sConversas = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#conexão do cliente com o host e porta especificadas
-		self.s.connect((HOST, PORTA))
+		self.s.connect((HOST_CHAT, PORTA_CHAT))
 		self.conectado = True
+		#abertura do servidor para conversas
+		try:
+			self.sConversas.bind((HOST_CONVERSA, PORTA_CONVERSA))
+			self.sConversas.listen(2)
+		except:
+			pass
 	#conecta
 
 	def envia(self, mensagem):
