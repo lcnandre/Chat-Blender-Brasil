@@ -46,5 +46,5 @@ FIXME
 MEMBROS
 =======
 
-André Luan (Brutto AVT)
-Solano Felício (Solano)
+- André Luan (Brutto AVT)
+- Solano Felício (Solano)
