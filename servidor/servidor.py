@@ -16,12 +16,10 @@ clientes = []
 s = None
 
 #importações
-import os
 import socket
 import threading
 import gobject
-
-path = os.path.dirname(os.path.abspath(__file__))
+import MySQLdb
 
 class Servidor():
 	def __init__(self):
@@ -149,15 +147,13 @@ def broadCast(dados):
 #broadCast
 
 def getListaContatos(login):
-	import sqlite3
-	import sqlite3
 	contatos = []
 	#busca a lista de contatos (apenas os que estao online) no BD
 	sql = """select u.login, u.ip, u.status
 			 from contato c inner join usuario u on u.id = c.amigo_id
-			 where c.usuario_id = (select id from usuario where login = ?)
+			 where c.usuario_id = (select id from usuario where login = %s)
 			 and u.status = 1"""
-	conexao = sqlite3.connect(os.path.join(path, '..\chat.s3db'))
+	conexao = MySQLdb.connect(host=HOST, user='root', passwd='', db='chat')
 	cursor = conexao.cursor()
 	cursor.execute(sql,(login,))
 	for contato in cursor:
@@ -170,11 +166,10 @@ def getListaContatos(login):
 #getListaContatos
 
 def atualizaPresenca(login, status):
-	import sqlite3
 	sql = """update usuario 
-			 set status = ?
-			 where login = ?"""
-	conexao = sqlite3.connect(os.path.join(path, '..\chat.s3db'))
+			 set status = %s
+			 where login = %s"""
+	conexao = MySQLdb.connect(host=HOST, user='root', passwd='', db='chat')
 	cursor = conexao.cursor()
 	cursor.execute(sql, (status,login,))
 	conexao.commit()
@@ -182,11 +177,10 @@ def atualizaPresenca(login, status):
 #atualizaPresenca
 
 def broadCastPresenca(status):
-	import sqlite3
 	sql = """update usuario 
-			 set status = ?
+			 set status = %s
 			 where 1=1"""
-	conexao = sqlite3.connect(os.path.join(path, '..\chat.s3db'))
+	conexao = MySQLdb.connect(host=HOST, user='root', passwd='', db='chat')
 	cursor = conexao.cursor()
 	cursor.execute(sql, (status,))
 	conexao.commit()
@@ -194,24 +188,22 @@ def broadCastPresenca(status):
 #broadCastPresenca
 	
 def atualizaIp(ip, login):
-	import sqlite3
-	conexao = sqlite3.connect(os.path.join(path, '..\chat.s3db'))
+	conexao = MySQLdb.connect(host=HOST, user='root', passwd='', db='chat')
 	cursor = conexao.cursor()
-	cursor.execute('update usuario set ip = ? where login = ?', (ip,login,))
+	cursor.execute('update usuario set ip = %s where login = %s', (ip,login,))
 	conexao.commit()
 	conexao.close()
 #atualizaIp
 
 def fazLogin(con):
-	import sqlite3
 	# recepcao dos dados
 	login = con.recv(1024)
 	con.send('OK')
 	senha = con.recv(1024)
 	# validacao dos dados
-	conexao = sqlite3.connect(os.path.join(path, '..\chat.s3db'))
+	conexao = MySQLdb.connect(host=HOST, user='root', passwd='', db='chat')
 	cursor = conexao.cursor()
-	cursor.execute('select senha from usuario where login = ?', (login,))
+	cursor.execute('select senha from usuario where login = %s', (login,))
 	res = cursor.fetchall()
 	conexao.close()
 	#retorno ao cliente
