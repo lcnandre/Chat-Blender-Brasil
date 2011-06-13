@@ -19,7 +19,7 @@ s = None
 import socket
 import threading
 import gobject
-import MySQLdb
+from conexao import getConexao
 
 class Servidor():
 	def __init__(self):
@@ -153,7 +153,7 @@ def getListaContatos(login):
 			 from contato c inner join usuario u on u.id = c.amigo_id
 			 where c.usuario_id = (select id from usuario where login = %s)
 			 and u.status = 1"""
-	conexao = MySQLdb.connect(host=HOST, user='root', passwd='', db='chat')
+	conexao = getConexao()
 	cursor = conexao.cursor()
 	cursor.execute(sql,(login,))
 	for contato in cursor:
@@ -169,7 +169,7 @@ def atualizaPresenca(login, status):
 	sql = """update usuario 
 			 set status = %s
 			 where login = %s"""
-	conexao = MySQLdb.connect(host=HOST, user='root', passwd='', db='chat')
+	conexao = getConexao()
 	cursor = conexao.cursor()
 	cursor.execute(sql, (status,login,))
 	conexao.commit()
@@ -188,7 +188,7 @@ def broadCastPresenca(status):
 #broadCastPresenca
 	
 def atualizaIp(ip, login):
-	conexao = MySQLdb.connect(host=HOST, user='root', passwd='', db='chat')
+	conexao = getConexao()
 	cursor = conexao.cursor()
 	cursor.execute('update usuario set ip = %s where login = %s', (ip,login,))
 	conexao.commit()
@@ -201,7 +201,7 @@ def fazLogin(con):
 	con.send('OK')
 	senha = con.recv(1024)
 	# validacao dos dados
-	conexao = MySQLdb.connect(host=HOST, user='root', passwd='', db='chat')
+	conexao = getConexao()
 	cursor = conexao.cursor()
 	cursor.execute('select senha from usuario where login = %s', (login,))
 	res = cursor.fetchall()
