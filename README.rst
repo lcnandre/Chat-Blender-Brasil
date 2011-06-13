@@ -48,3 +48,4 @@ MEMBROS
 
 - André Luan (Brutto AVT)
 - Solano Felício (Solano)
+- Leandro Benedet Garcia (Cerberus_1746)
