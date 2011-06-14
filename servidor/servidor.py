@@ -19,6 +19,7 @@ s = None
 import socket
 import threading
 import gobject
+import MySQLdb
 from conexao import getConexao
 
 class Servidor():
