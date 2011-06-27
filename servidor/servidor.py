@@ -140,7 +140,7 @@ class ThreadMensagensRecebidas(threading.Thread):
 						addContato(self.usuario, amigo)
 					elif dados.find('/me '):
 						msg = dados[4:]
-						broadCast(msg, modo='me')
+						broadCast(msg, modo='me', usuario=self.usuario)
 						
 				#outras mensagens (chat)
 				elif len(dados) != 0: #se a mensagem nao esta em branco
@@ -155,9 +155,10 @@ def broadCast(dados, **kwargs):
 	global clientes
 	try: 
 		modo = kwargs['modo']
+		usuario = kwargs['usuario']
 		if modo=='me':
 			for cliente in clientes:
-				cliente.send('*** %s ***'%dados)
+				cliente.send('*** %s %s ***'%(usuario,dados,))
 	except:
 		for cliente in clientes: #para cada socket de cliente na lista
 			cliente.send(dados) #envio da mensagem recebida
