@@ -131,6 +131,17 @@ class ThreadMensagensRecebidas(threading.Thread):
 							self.con.send(str(contato))
 							self.con.recv(1024)#aguarda ok do cliente
 						self.con.send('(9s8d9s asudhasiud 8s9d8as /*-393 2 s8duas98d U8s8a SD98j /00s*')#envia para dizer que a lista acabou
+				
+				# Solano passou por aqui
+				# comandos IRC-Like (/add, /me por enquanto)
+				elif dados[0] == '/':
+					if dados.find('/add '):
+						amigo = dados[5:]
+						addContato(self.usuario, amigo)
+					elif dados.find('/me '):
+						msg = dados[4:]
+						broadCast(msg, modo='me')
+						
 				#outras mensagens (chat)
 				elif len(dados) != 0: #se a mensagem nao esta em branco
 					broadCast(dados) #envio da mensagem a todos os clientes
@@ -140,10 +151,16 @@ class ThreadMensagensRecebidas(threading.Thread):
 				break #fim do loop infinito
 #ThreadMensagensRecebidas
 
-def broadCast(dados):
+def broadCast(dados, **kwargs):
 	global clientes
-	for cliente in clientes: #para cada socket de cliente na lista
-		cliente.send(dados) #envio da mensagem recebida
+	try: 
+		modo = kwargs['modo']
+		if modo=='me':
+			for cliente in clientes:
+				cliente.send('*** %s ***'%dados)
+	except:
+		for cliente in clientes: #para cada socket de cliente na lista
+			cliente.send(dados) #envio da mensagem recebida
 #broadCast
 
 def getListaContatos(login):
@@ -186,6 +203,20 @@ def broadCastPresenca(status):
 	conexao.commit()
 	conexao.close()
 #broadCastPresenca
+def addContato(login, contato):
+	sql = """select * from usuario
+			where login = %s"""
+	conexao = getConexao()
+	loginId = conexao.cursor()
+	loginId.execute(sql, (login,))
+	contatoId = conexao.cursor()
+	contadoId.execute(sql, (contato,))
+	
+	sql = """insert into contato (usuario_id, amigo_id)
+		values (%s, %s)"""
+	# TODO: daqui meu SQL eh muito enferrujado pra continuar
+	conexao.commit()
+	conexao.close()
 	
 def atualizaIp(ip, login):
 	conexao = getConexao()

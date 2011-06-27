@@ -41,7 +41,7 @@ class Cliente:
 	def envia(self, mensagem):
 		if self.conectado:
 			#envio da mensagem ao servidor
-			if len(self.usuario) > 0:
+			if len(self.usuario) > 0 and not mensagem[0]=='/':
 				self.s.send('%s: %s'%(self.usuario,mensagem))
 			else:
 				self.s.send(mensagem)
