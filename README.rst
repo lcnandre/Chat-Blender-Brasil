@@ -11,8 +11,8 @@ REQUERIMENTOS
 =============
 
 - Python 2
-- 'PyGTK<http://www.pygtk.org/downloads.html>'_
-- 'Python-MYSQL<http://sourceforge.net/projects/mysql-python>'_
+- PyGTK_
+- Python-MySQL_
 
 
 PARA USAR
@@ -48,3 +48,6 @@ MEMBROS
 - André Luan (Brutto AVT)
 - Solano Felício (Solano)
 - Leandro Benedet Garcia (Cerberus_1746)
+
+.. _PyGTK: http://www.pygtk.org/downloads.html
+.. _Python-MySQL: http://sourceforge.net/projects/mysql-python
