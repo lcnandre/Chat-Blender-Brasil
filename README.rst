@@ -11,12 +11,12 @@ REQUERIMENTOS
 =============
 
 - Python 2
-- PyGTK (http://www.pygtk.org/downloads.html)
-- Python-MYSQL (http://sourceforge.net/projects/mysql-python)
+- 'PyGTK<http://www.pygtk.org/downloads.html>'_
+- 'Python-MYSQL<http://sourceforge.net/projects/mysql-python>'_
 
 
 PARA USAR
-==========
+=========
 
 #. Execute o arquivo "servidor.bat" ou "servidor.sh", dependendo de seu ambiente (ou ainda "servidor.py" diretamente)
 #. Na tela do servidor, clique em Iniciar
@@ -41,7 +41,6 @@ FIXME
 
 - Servidor:
 	- para fechar o servidor, é preciso apertar o botão Parar duas vezes
-	- o BD não funciona em sistemas Linux
 
 MEMBROS
 =======
